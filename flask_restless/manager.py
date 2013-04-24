@@ -430,4 +430,4 @@ class APIManager(object):
         """
         blueprint = self.create_api_blueprint(*args, **kw)
         self.app.register_blueprint(blueprint)
-        print "wow"
+        print "wow2"
