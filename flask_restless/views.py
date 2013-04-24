@@ -276,7 +276,7 @@ class API(ModelView):
                  include_columns=None, validation_exceptions=None,
                  results_per_page=10, max_results_per_page=100,
                  post_form_preprocessor=None, preprocessors=None,
-                 postprocessors=None, *args, **kw):
+                 postprocessors=None, custom_data_func=None, *args, **kw):
         """Instantiates this view with the specified attributes.
 
         `session` is the SQLAlchemy session in which all database transactions
@@ -392,6 +392,9 @@ class API(ModelView):
         self.preprocessors = defaultdict(list)
         self.postprocessors.update(upper_keys(postprocessors or {}))
         self.preprocessors.update(upper_keys(preprocessors or {}))
+
+        self.custom_data_func = custom_data_func
+
         # move post_form_preprocessor to preprocessors['POST'] for backward
         # compatibility
         if post_form_preprocessor:
@@ -781,10 +784,13 @@ class API(ModelView):
 
         for preprocessor in self.preprocessors['GET_MANY']:
             preprocessor(search_params=search_params)
-
+        
         # perform a filtered search
         try:
-            result = search(self.session, self.model, search_params)
+            if self.custom_data_func:
+                result = self.custom_data_func()
+            else:
+                result = search(self.session, self.model, search_params)
         except NoResultFound:
             return jsonify_status_code(400, message='No result found')
         except MultipleResultsFound:

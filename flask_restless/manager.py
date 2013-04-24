@@ -182,7 +182,8 @@ class APIManager(object):
                              validation_exceptions=None, results_per_page=10,
                              max_results_per_page=100,
                              post_form_preprocessor=None,
-                             preprocessors=None, postprocessors=None):
+                             preprocessors=None, postprocessors=None,
+                             custom_data_func=None):
         """Creates an returns a ReSTful API interface as a blueprint, but does
         not register it on any :class:`flask.Flask` application.
 
@@ -371,7 +372,8 @@ class APIManager(object):
                                include_columns, validation_exceptions,
                                results_per_page, max_results_per_page,
                                post_form_preprocessor, preprocessors,
-                               postprocessors)
+                               postprocessors,
+                               custom_data_func=custom_data_func)
         # suffix an integer to apiname according to already existing blueprints
         blueprintname = self._next_blueprint_name(apiname)
         # add the URL rules to the blueprint: the first is for methods on the
@@ -430,4 +432,3 @@ class APIManager(object):
         """
         blueprint = self.create_api_blueprint(*args, **kw)
         self.app.register_blueprint(blueprint)
-        print "wow3"
